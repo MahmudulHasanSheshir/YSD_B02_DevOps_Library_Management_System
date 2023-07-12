@@ -5,9 +5,10 @@ pipeline {
     maven "maven-3.9.3"
   }
   triggers {
-       // poll repo every 2 minute for changes
-       pollSCM('*/2 * * * *')
-  } 
+  // Poll repo every 2 minutes for changes
+  pollSCM('*/2 * * * *')
+  }
+
   parameters {
     choice(
       choices: ['main', 'sheshir'],
@@ -93,7 +94,8 @@ pipeline {
       steps {
         withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
           sh "kubectl apply -f sparklms-deployment.yaml"
-          sh "kubectl apply -f sparklms-service.yaml"
+          sh "kubectl apply -f sparklms-service.yaml && sleep 2s"
+          sh "kubectl get services -n sheshir-namespace"
         }
       }
     }
