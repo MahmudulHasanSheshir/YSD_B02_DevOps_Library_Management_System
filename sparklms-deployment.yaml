@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: sparklms
-          image: mahmudulhasansheshir/spark:V-${env.BUILD_NUMBER}
+          image: mahmudulhasansheshir/spark
           ports:
             - containerPort: 8080
             
