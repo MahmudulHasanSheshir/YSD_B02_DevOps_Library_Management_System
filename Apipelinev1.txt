@@ -20,7 +20,11 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        
+        stage('Create a JAVA-restart service'){
+            steps{
+                ansiblePlaybook become: true, credentialsId: '1234', disableHostKeyChecking: true, installation: 'ansible', inventory: 'inventory', playbook: 'ansible-java-service.yaml'
+            }
+        }
         stage('Stop previous service'){
             steps {
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'aws', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pkill java || true', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
@@ -35,9 +39,5 @@ pipeline {
     
         
     }
-    post { 
-        always { 
-            cleanWs()
-        }
-    }
+    
 }
