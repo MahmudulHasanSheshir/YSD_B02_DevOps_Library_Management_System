@@ -1,11 +1,25 @@
----
 - hosts: ec2-user
   become: true
   become_method: sudo
   tasks:
-    - name: Copy file to /etc/systemd/system
+    - name: Copy file to /usr/lib/systemd/system
       copy:
         src: /var/lib/jenkins/workspace/AWS_YSD_B02_DevOps_Library_Management_System/javarestart.service
-        dest: /etc/systemd/system
-    - name: Start javastart service
-      command: systemctl start javastart
+        dest: /usr/lib/systemd/system
+
+    - name: Create symlink to /etc/systemd/system/multi-user.target.wants
+      file:
+        src: /usr/lib/systemd/system/javarestart.service
+        dest: /etc/systemd/system/multi-user.target.wants/javarestart.service
+        state: link
+        force: yes
+
+    - name: Reload the systemd to re-read configurations
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable the javastart service and start
+      systemd:
+        name: javastart
+        enabled: yes
+        state: started
