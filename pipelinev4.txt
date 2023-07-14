@@ -4,10 +4,10 @@ pipeline {
   tools {
     maven "maven-3.9.3"
   }
-//   triggers {
-//   // Poll repo every 2 minutes for changes
-//   pollSCM('*/2 * * * *')
-//   }
+  triggers {
+  // Poll repo every 2 minutes for changes
+  pollSCM('*/2 * * * *')
+  }
 
   parameters {
     choice(
@@ -55,6 +55,7 @@ pipeline {
 
             sh "docker build -t ${imageName}:${imageTag} -f ${dockerfile} ."
             sh "docker push ${imageName}:${imageTag}"
+            sh " docker tag ${imageName}:${imageTag} ${imageName}:latest "
             sh "docker push ${imageName}:latest"
           }
         }
