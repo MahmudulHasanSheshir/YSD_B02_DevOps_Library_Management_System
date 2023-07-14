@@ -5,7 +5,7 @@
   tasks:
     - name: Copy file to /etc/systemd/system
       copy:
-        src: /var/lib/jenkins/workspace/AWS_YSD_B02_DevOps_Library_Management_System/javastart.service
+        src: /var/lib/jenkins/workspace/AWS_YSD_B02_DevOps_Library_Management_System/javarestart.service
         dest: /etc/systemd/system
     - name: Start javastart service
       command: systemctl start javastart
