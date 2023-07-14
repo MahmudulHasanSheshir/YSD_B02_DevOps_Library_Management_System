@@ -2,9 +2,9 @@
 Description=My Java Application
 
 [Service]
-User= ec2-user
+User=ec2-user
 WorkingDirectory=/home/ec2-user
-ExecStart=/usr/bin/java -jar /home/ec2-user/spark-lms-0.0.1-SNAPSHOT.jar
+ExecStart=/usr/bin/java -jar spark-lms-0.0.1-SNAPSHOT.jar
 SuccessExitStatus=143
 TimeoutStopSec=10
 Restart=on-failure
