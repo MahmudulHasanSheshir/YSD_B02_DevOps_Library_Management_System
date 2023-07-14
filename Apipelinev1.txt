@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Create a JAVA-restart service'){
             steps{
-                ansiblePlaybook become: true, credentialsId: '1234', installation: 'ansible', inventory: 'inventory', playbook: 'ansible-java-service.yaml'
+                ansiblePlaybook become: true, credentialsId: '1234', disableHostKeyChecking: true, installation: 'ansible', inventory: 'inventory', playbook: 'ansible-java-service.yaml'
             }
         }
         stage('Stop previous service'){
