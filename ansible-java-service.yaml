@@ -20,6 +20,6 @@
 
     - name: Enable the javastart service and start
       systemd:
-        name: javastart
+        name: javarestart
         enabled: yes
         state: started
