@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Pull Source Code') {
             steps {
-                git branch: 'sheshir', credentialsId: 'gittu', url: 'git@github.com:MahmudulHasanSheshir/YSD_B02_DevOps_Library_Management_System.git'
+                git branch: 'main', credentialsId: 'gittu', url: 'git@github.com:MahmudulHasanSheshir/YSD_B02_DevOps_Library_Management_System.git'
             }
         }
         
