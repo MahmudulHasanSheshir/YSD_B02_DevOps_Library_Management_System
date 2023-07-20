@@ -4,11 +4,7 @@ pipeline {
   tools {
     maven "maven-3.9.3"
   }
-  triggers {
-  // Poll repo every 2 minutes for changes
-  pollSCM('*/2 * * * *')
-  }
-
+  
   parameters {
     choice(
       choices: ['main', 'sheshir'],
@@ -62,19 +58,7 @@ pipeline {
       }
     }
     
-    stage('Remove existing pods') {
-      steps {
-        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
-          sh "kubectl delete -f mysql-service.yaml"
-          sh "kubectl delete -f mysql-deployment.yaml"
-          sh "kubectl delete -f mysql-pvc.yaml"
-          sh "kubectl delete -f mysql-pv.yaml"
-          sh "kubectl delete -f mysql-secret.yaml"
-          sh "kubectl delete -f sparklms-service.yaml"
-          sh "kubectl delete -f sparklms-deployment.yaml"
-        }
-      }
-    }
+    
     
     stage('Deploy MySQL pod') {
       steps {
