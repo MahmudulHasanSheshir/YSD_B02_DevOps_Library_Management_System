@@ -28,6 +28,15 @@ pipeline {
       }
     }
 
+    
+    stage('Build Artifact') {
+      when {
+        expression { params.START_FROM_1st_STAGE == true }
+      }
+      steps {
+        sh 'mvn clean install'
+      }
+    }
     stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONARQUBE_TOKEN')]) {
@@ -39,15 +48,6 @@ pipeline {
                 }
             }
         }
-    stage('Build Artifact') {
-      when {
-        expression { params.START_FROM_1st_STAGE == true }
-      }
-      steps {
-        sh 'mvn clean install'
-      }
-    }
-    
     stage('Build and Dockerize') {
       when {
         expression { params.START_FROM_1st_STAGE == true }
