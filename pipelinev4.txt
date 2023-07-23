@@ -21,7 +21,6 @@ pipeline {
   }
 
   stages {
-    stages {
     stage('Pre-build') {
       steps {
         slackSend channel: '#automation', color: '#88c007',
@@ -39,25 +38,29 @@ pipeline {
     }
 
     
-    stage('Build Artifact') {
+    stage('Parallel Stages') {
       when {
         expression { params.START_FROM_1st_STAGE == true }
       }
-      steps {
-        sh 'mvn clean install'
+    parallel {
+      stage('Build Artifact') {
+        steps {
+          sh 'mvn clean install'
+        }
+      }
+      stage('SonarQube Analysis') {
+        steps {
+          withCredentials([string(credentialsId: 'sonarqube', variable: 'SONARQUBE_TOKEN')]) {
+            withSonarQubeEnv('sonarqube') {
+              script {
+                sh "mvn sonar:sonar -Dsonar.projectKey=jenkins -Dsonar.host.url=http://192.168.20.178:9000 -Dsonar.login=${SONARQUBE_TOKEN}"
+              }
+            }
+          }
+        }
       }
     }
-    stage('SonarQube Analysis') {
-            steps {
-                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONARQUBE_TOKEN')]) {
-                    withSonarQubeEnv('sonarqube') {
-                        script {
-                            sh "mvn sonar:sonar -Dsonar.projectKey=jenkins -Dsonar.host.url=http://192.168.20.178:9000 -Dsonar.login=${SONARQUBE_TOKEN}"
-                        }
-                    }
-                }
-            }
-        }
+  }
     stage('Build and Dockerize') {
       when {
         expression { params.START_FROM_1st_STAGE == true }
@@ -142,5 +145,5 @@ post {
     }
   
   
-  }
 }
+
