@@ -57,7 +57,7 @@ pipeline {
           script {
             def imageName = 'mahmudulhasansheshir/spark'
             def dockerfile = 'Dockerfile'
-            def buildNumber = ${env.BUILD_NUMBER} ?: '1'
+            def buildNumber = env.BUILD_NUMBER ?: '1'
             def imageTag = "V-${buildNumber}"
 
             sh "docker build -t ${imageName}:${imageTag} -f ${dockerfile} ."
