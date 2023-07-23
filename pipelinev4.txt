@@ -137,11 +137,11 @@ post {
               message: "On-premise pipeline Build successful: ${currentBuild.fullDisplayName}"
         }
   failure {
-            // Slack notification for failed build
-    slackSend channel: '#automation', color: 'danger',
-              message: "Build failed: ${currentBuild.fullDisplayName}"
+            
+    slackSend channel: '#automation', color: '#danger',
+              message: "On-premise pipeline Build fail: ${currentBuild.fullDisplayName}"
         }
-    }
+}
   
   
 }
