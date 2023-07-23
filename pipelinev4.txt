@@ -37,7 +37,12 @@ pipeline {
       }
     }
 
-    
+    stage('Apply configuration'){
+      steps{
+        sh "sed -i 's|spring.datasource.username = .*|spring.datasource.username = sheshir|g' src/main/resources/application.properties"
+        sh "sed -i 's|spring.datasource.password = .*|spring.datasource.password = sheshir|g' src/main/resources/application.properties"
+      }
+    }
     stage('Parallel Stages') {
       when {
         expression { params.START_FROM_1st_STAGE == true }
