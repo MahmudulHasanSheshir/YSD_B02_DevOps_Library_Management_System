@@ -21,6 +21,14 @@ pipeline {
   }
 
   stages {
+    stages {
+    stage('Pre-build') {
+      steps {
+        slackSend channel: '#automation', color: '#88c007',
+                  message: "Pipeline starting: ${currentBuild.fullDisplayName}"
+      }
+    }
+
     stage('Source Code Pulling') {
       when {
         expression { params.START_FROM_1st_STAGE == true }
