@@ -16,6 +16,9 @@ pipeline {
         stage('Configure application'){
             steps {
                 sh "sed -i 's|mysql-service:3306/sparklmsdb|bravo-rds.cjldgoxvvwoc.us-west-2.rds.amazonaws.com:3306/sheshir|g' src/main/resources/application.properties"
+                sh "sed -i 's|spring.datasource.username = .*|spring.datasource.username = sheshir|g' src/main/resources/application.properties"
+                sh "sed -i 's|spring.datasource.password = .*|spring.datasource.password = sheshir|g' src/main/resources/application.properties"
+
             }
         }
         stage('Build Artifact'){
