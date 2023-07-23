@@ -1,0 +1,103 @@
+pipeline {
+  agent any
+
+  tools {
+    maven "maven-3.9.3"
+  }
+  
+  parameters {
+    choice(
+      choices: ['main', 'sheshir'],
+      description: 'Select the branch to clone',
+      name: 'BRANCH'
+    )
+    booleanParam(
+      defaultValue: true,
+      description: 'Start from the beginning of the pipeline or from "Remove existing pods" stage',
+      name: 'START_FROM_1st_STAGE'
+    )
+  }
+
+  stages {
+    stage('Source Code Pulling') {
+      when {
+        expression { params.START_FROM_1st_STAGE == true }
+      }
+      steps {
+        git branch: params.BRANCH, credentialsId: 'gittu', url: 'git@github.com:MahmudulHasanSheshir/YSD_B02_DevOps_Library_Management_System.git'
+      }
+    }
+
+    
+    stage('Build Artifact') {
+      when {
+        expression { params.START_FROM_1st_STAGE == true }
+      }
+      steps {
+        sh 'mvn clean install'
+      }
+    }
+    stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONARQUBE_TOKEN')]) {
+                    withSonarQubeEnv('sonarqube') {
+                        script {
+                            sh "mvn sonar:sonar -Dsonar.projectKey=jenkins -Dsonar.host.url=http://192.168.20.178:9000 -Dsonar.login=${SONARQUBE_TOKEN}"
+                        }
+                    }
+                }
+            }
+        }
+    stage('Build and Dockerize') {
+      when {
+        expression { params.START_FROM_1st_STAGE == true }
+      }
+      steps {
+        withDockerRegistry(credentialsId: 'docker', url:'') {
+          script {
+            def imageName = 'mahmudulhasansheshir/spark'
+            def dockerfile = 'Dockerfile'
+            def buildNumber = env.BUILD_NUMBER ?: '1'
+            def imageTag = "V-${buildNumber}"
+
+            sh "docker build -t ${imageName}:${imageTag} -f ${dockerfile} ."
+            sh "docker push ${imageName}:${imageTag}"
+            sh " docker tag ${imageName}:${imageTag} ${imageName}:latest "
+            sh "docker push ${imageName}:latest"
+          }
+        }
+      }
+    }
+    
+    stage('Deploy MySQL pod') {
+      steps {
+        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
+          sh "kubectl apply -f mysql-secret.yaml"
+          sh "kubectl apply -f mysql-pv.yaml"
+          sh "kubectl apply -f mysql-pvc.yaml"
+          sh "kubectl apply -f mysql-deployment.yaml"
+          sh "kubectl apply -f mysql-service.yaml && sleep 15s"
+        }
+      }
+    }
+    
+    stage('Deploy Application pod') {
+      steps {
+        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
+          sh "sed 's/__TAG__/${imageTag}/g' sparklms-deployment-template.yaml > sparklms-deployment.yaml"
+          sh "kubectl apply -f sparklms-deployment.yaml"
+          sh "kubectl apply -f sparklms-service.yaml && sleep 2s"
+          sh "kubectl get services -n sheshir-namespace"
+        }
+      }
+    }
+  }
+post {
+      always {
+        // Clean up the workspace after the pipeline execution
+        cleanWs()
+      }
+    }
+  
+  
+}
