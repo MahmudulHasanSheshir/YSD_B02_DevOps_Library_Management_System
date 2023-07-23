@@ -57,13 +57,14 @@ pipeline {
           script {
             def imageName = 'mahmudulhasansheshir/spark'
             def dockerfile = 'Dockerfile'
-            def buildNumber = env.BUILD_NUMBER ?: '1'
+            def buildNumber = ${env.BUILD_NUMBER} ?: '1'
             def imageTag = "V-${buildNumber}"
 
             sh "docker build -t ${imageName}:${imageTag} -f ${dockerfile} ."
             sh "docker push ${imageName}:${imageTag}"
             sh " docker tag ${imageName}:${imageTag} ${imageName}:latest "
             sh "docker push ${imageName}:latest"
+            sh "sed 's/__TAG__/${imageTag}/g' sparklms-deployment-template.yaml > sparklms-deployment.yaml"
           }
         }
       }
@@ -84,7 +85,7 @@ pipeline {
     stage('Deploy Application pod') {
       steps {
         withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
-          sh "sed 's/__TAG__/${imageTag}/g' sparklms-deployment-template.yaml > sparklms-deployment.yaml"
+          
           sh "kubectl apply -f sparklms-deployment.yaml"
           sh "kubectl apply -f sparklms-service.yaml && sleep 2s"
           sh "kubectl get services -n sheshir-namespace"
