@@ -44,10 +44,10 @@ pipeline {
         }
 }
     post {
-      always {
+      //always {
         // Clean up the workspace after the pipeline execution
-        cleanWs()
-      }
+        //cleanWs()
+      //}
     success {
             // Slack notification for successful build
             slackSend channel: '#automation', color: 'good',
