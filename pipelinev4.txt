@@ -105,6 +105,16 @@ pipeline {
         }
       }
     }
+    stage('Rollback on failure') {
+  when {
+    expression { currentBuild.result == 'FAILURE' }
+  }
+  steps {
+    withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kube-cred', namespace: '', serverUrl: '']]) {
+      sh "kubectl rollout undo deployment/sparklms-deployment"
+    }
+  }
+}
   }
 post {
       always {
