@@ -64,7 +64,7 @@ pipeline {
             sh "docker push ${imageName}:${imageTag}"
             sh " docker tag ${imageName}:${imageTag} ${imageName}:latest "
             sh "docker push ${imageName}:latest"
-            sh "sed 's/__TAG__/${imageTag}/g' sparklms-deployment-template.yaml > sparklms-deployment.yaml"
+            sh "sed 's/__TAG__/${imageTag}/g' sparklms-deployment.yaml"
           }
         }
       }
