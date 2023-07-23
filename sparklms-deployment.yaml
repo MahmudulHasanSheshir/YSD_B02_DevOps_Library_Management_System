@@ -15,8 +15,6 @@ spec:
     spec:
       containers:
         - name: sparklms
-          image: mahmudulhasansheshir/spark:latest
+          image: mahmudulhasansheshir/spark:__TAG__
           ports:
             - containerPort: 8080
-            
-
