@@ -4,7 +4,7 @@
   tasks:
     - name: Copy file to /usr/lib/systemd/system
       copy:
-        src: /var/lib/jenkins/workspace/AWS_YSD_B02_DevOps_Library_Management_System/javarestart.service
+        src: /var/lib/jenkins/workspace/AWS-Deployment_YSD_final_project/javarestart.service
         dest: /usr/lib/systemd/system
 
     - name: Create symlink to /etc/systemd/system/multi-user.target.wants
